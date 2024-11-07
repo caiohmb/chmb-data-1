@@ -4,7 +4,7 @@ resource "aws_glue_crawler" "dev-crawler-data-1" {
   database_name = "var.glue_database_name"
   description   = "Crawler para buscar arquivos no S3"
 
-  s3_targets {
+  s3_target {
     path = "var.s3_data_path"
   }
 
