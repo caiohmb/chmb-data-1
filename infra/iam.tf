@@ -15,9 +15,9 @@ resource "aws_iam_role" "glue_role" {
   })
 }
 
-resource "aws_iam_policy" "glue_s3_policy" {
-  name        = "GlueS3AccessPolicy"
-  description = "Policy for Glue Crawler to access S3 bucket"
+resource "aws_iam_policy" "glue_full_policy" {
+  name        = "GlueFullAccessPolicy"
+  description = "Full policy for Glue Crawler access including S3 and EC2 actions"
 
   policy = jsonencode({
     "Version": "2012-10-17",
@@ -25,22 +25,94 @@ resource "aws_iam_policy" "glue_s3_policy" {
       {
         "Effect": "Allow",
         "Action": [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListBucket"
+          "glue:*",
+          "s3:GetBucketLocation",
+          "s3:ListBucket",
+          "s3:ListAllMyBuckets",
+          "s3:GetBucketAcl",
+          "ec2:DescribeVpcEndpoints",
+          "ec2:DescribeRouteTables",
+          "ec2:CreateNetworkInterface",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVpcAttribute",
+          "iam:ListRolePolicies",
+          "iam:GetRole",
+          "iam:GetRolePolicy",
+          "cloudwatch:PutMetricData"
         ],
         "Resource": [
-          "arn:aws:s3:::dev-us-east-1-data-1-project",
-          "arn:aws:s3:::dev-us-east-1-data-1-project/*"
+          "*"
         ]
       },
       {
         "Effect": "Allow",
         "Action": [
-          "glue:*",
+          "s3:CreateBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::aws-glue-*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        "Resource": [
+          "arn:aws:s3:::aws-glue-*/*",
+          "arn:aws:s3:::*/*aws-glue-*/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject"
+        ],
+        "Resource": [
+          "arn:aws:s3:::crawler-public*",
+          "arn:aws:s3:::aws-glue-*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
+        ],
+        "Resource": [
+          "arn:aws:logs:*:*:/aws-glue/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:CreateTags",
+          "ec2:DeleteTags"
+        ],
+        "Condition": {
+          "ForAllValues:StringEquals": {
+            "aws:TagKeys": [
+              "aws-glue-service-resource"
+            ]
+          }
+        },
+        "Resource": [
+          "arn:aws:ec2:*:*:network-interface/*",
+          "arn:aws:ec2:*:*:security-group/*",
+          "arn:aws:ec2:*:*:instance/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:*",
+          "s3-object-lambda:*"
         ],
         "Resource": "*"
       }
@@ -50,5 +122,5 @@ resource "aws_iam_policy" "glue_s3_policy" {
 
 resource "aws_iam_role_policy_attachment" "glue_role_attachment" {
   role       = aws_iam_role.glue_role.name
-  policy_arn = aws_iam_policy.glue_s3_policy.arn
+  policy_arn = aws_iam_policy.glue_full_policy.arn
 }
