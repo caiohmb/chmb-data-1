@@ -20,9 +20,4 @@ resource "aws_glue_job" "glue_iceberg_job" {
     "--spark.sql.catalog.glue_catalog.io-impl"  = "org.apache.iceberg.aws.s3.S3FileIO"
     "--spark.sql.extensions"                   = "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions"
   }
-
-  max_capacity = 5
-
-  # Configuração para gerenciamento de estado do Glue Job
-  max_retries = 2
 }
