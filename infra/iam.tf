@@ -115,6 +115,53 @@ resource "aws_iam_policy" "glue_full_policy" {
           "s3-object-lambda:*"
         ],
         "Resource": "*"
+      },
+      # Adicionando permissões específicas para o Glue Job
+      {
+        "Effect": "Allow",
+        "Action": [
+          "glue:CreateJob",
+          "glue:GetJob",
+          "glue:GetJobRun",
+          "glue:StartJobRun",
+          "glue:UpdateJob",
+          "glue:DeleteJob",
+          "glue:GetTable",
+          "glue:BatchGetTable",
+          "glue:BatchGetPartition",
+          "glue:GetTableVersion",
+          "glue:BatchCreatePartition",
+          "glue:BatchDeletePartition"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::dev-us-east-1-data-1-project/*",
+          "arn:aws:s3:::dev-us-east-1-data-1-project/bronze/iceberg/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "glue:CreateDatabase",
+          "glue:UpdateDatabase",
+          "glue:GetDatabase",
+          "glue:DeleteDatabase"
+        ],
+        "Resource": [
+          "arn:aws:glue:us-east-1:183631349055:catalog",
+          "arn:aws:glue:us-east-1:183631349055:database/*",
+          "arn:aws:glue:us-east-1:183631349055:table/*"
+        ]
       }
     ]
   })
