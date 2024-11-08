@@ -1,6 +1,6 @@
 resource "aws_glue_job" "glue_iceberg_job" {
   name     = "dev-us-east-1-data-1-project-glue-job"
-  role     = aws_iam_role.glue_role.arn
+  role_arn = aws_iam_role.glue_role.arn
 
   command {
     name            = "glueetl"
