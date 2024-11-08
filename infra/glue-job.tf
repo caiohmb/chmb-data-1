@@ -9,7 +9,6 @@ resource "aws_glue_job" "glue_iceberg_job" {
   }
 
   connections = []
-  max_capacity = 10
   timeout      = 5
   number_of_workers = 2
   worker_type  = "Standard"
